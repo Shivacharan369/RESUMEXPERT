@@ -1,0 +1,159 @@
+/* General Styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: url('../assets/background.jpg') no-repeat center center/cover;
+    color: white;
+}
+
+/* Header Styling */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 50px;
+    width: auto;
+    margin-right: 10px;
+}
+
+.logo h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #a855f7;
+}
+
+.navbar {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.3s ease-in-out;
+}
+
+.navbar a:hover {
+    color: #a855f7;
+}
+
+.navbar a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: #a855f7;
+    left: 50%;
+    bottom: -5px;
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+}
+
+.navbar a:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+/* Hero Section */
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100vh;
+    padding: 100px 50px 0;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 50%;
+}
+
+.hero-content h2 {
+    font-size: 70px;
+    font-weight: bold;
+    color: black;
+    animation: fadeInUp 1s ease-in-out;
+}
+
+.hero-content p {
+    font-size: 50px;
+    margin-top: 10px;
+    animation: fadeInUp 1.2s ease-in-out;
+}
+.p{
+    font-size: 50px;
+    margin-top: 80px;
+    animation: fadeInUp 1.2s ease-in-out;
+}
+
+
+
+.hero-img {
+    flex: 1;
+    max-width: 50%;
+    text-align: right;
+}
+
+.hero-img img {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.hero-img img:hover {
+    transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+
+    .hero-img {
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .navbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
