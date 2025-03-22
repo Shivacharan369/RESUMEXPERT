@@ -35,10 +35,10 @@ const Header = () => {
           Resume
         </Link>
         <Link to="/coverletter" onClick={(e) => handleNavigation(e, "/coverletter")}>
-          Cover Letter
+          CoverLetter
         </Link>
         <Link to="/mock" onClick={(e) => handleNavigation(e, "/mock")}>
-          AI Mock Interview
+          MockInterview
         </Link>
         <Link to="/profile" onClick={(e) => handleNavigation(e, "/profile")}>
           Profile
