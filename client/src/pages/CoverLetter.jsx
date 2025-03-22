@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { FaFilePdf, FaFileWord, FaTrash } from "react-icons/fa";
+import { FaFilePdf, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -9,10 +9,12 @@ import bgImage from "../assets/bg.jpg";
 const CoverLetter = () => {
   const navigate = useNavigate();
   const [resumeFile, setResumeFile] = useState(null);
+  const [companyName, setCompanyName] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
   const [jdText, setJdText] = useState("");
-  const [jdFile, setJdFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [generatedPdf, setGeneratedPdf] = useState(null);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: ".pdf, .doc, .docx",
@@ -20,11 +22,10 @@ const CoverLetter = () => {
   });
 
   const removeResumeFile = () => setResumeFile(null);
-  const removeJdFile = () => setJdFile(null);
 
   const handleUpload = async () => {
-    if (!resumeFile || (!jdText && !jdFile)) {
-      setErrorMessage("⚠️ Please upload both the Cover Letter and Job Description.");
+    if (!resumeFile || !companyName || !jobTitle || !jdText) {
+      setErrorMessage("⚠️ Please upload your resume and fill all job details.");
       return;
     }
 
@@ -32,20 +33,19 @@ const CoverLetter = () => {
     setIsUploading(true);
     const formData = new FormData();
     formData.append("coverLetter", resumeFile);
-    if (jdFile) {
-      formData.append("jobDescription", jdFile);
-    } else {
-      formData.append("jobDescriptionText", jdText);
-    }
+    formData.append("companyName", companyName);
+    formData.append("jobTitle", jobTitle);
+    formData.append("jobDescriptionText", jdText);
 
     try {
-      const response = await fetch("http://localhost:5000/upload-cover-letter", {
+      const response = await fetch("http://localhost:5000/generate-cover-letter", {
         method: "POST",
         body: formData,
       });
 
       if (response.ok) {
-        navigate("/cover-score");
+        const blob = await response.blob();
+        setGeneratedPdf(URL.createObjectURL(blob));
       } else {
         setErrorMessage("❌ Upload failed. Please try again.");
       }
@@ -71,7 +71,7 @@ const CoverLetter = () => {
           <h1 className="text-5xl font-bold text-center pt-10 pb-2 text-purple-400">
             Get Your Cover Letter Score Now..!
           </h1>
-          <p className="mt-4 text-2xl text-gray-300">Upload your cover letter and check your score.</p>
+          <p className="mt-4 text-2xl text-gray-300">Upload your resume and enter job details.</p>
 
           {/* Resume Upload Box */}
           <div
@@ -81,16 +81,12 @@ const CoverLetter = () => {
             <input {...getInputProps()} />
             {!resumeFile ? (
               <>
-                <p className="text-gray-300 text-2xl font-medium">Drop your cover letter or choose file</p>
+                <p className="text-gray-300 text-2xl font-medium">Drop your resume or choose file</p>
                 <p className="text-lg text-gray-500 mt-2">📄 PDFs and DOCs only</p>
               </>
             ) : (
               <div className="flex items-center justify-center gap-4">
-                {resumeFile.name.endsWith(".pdf") ? (
-                  <FaFilePdf className="text-red-500 text-5xl" />
-                ) : (
-                  <FaFileWord className="text-blue-500 text-5xl" />
-                )}
+                <FaFilePdf className="text-red-500 text-5xl" />
                 <p className="text-gray-300 text-xl">{resumeFile.name}</p>
                 <button onClick={removeResumeFile} className="text-red-400 hover:text-red-600">
                   <FaTrash className="text-3xl" />
@@ -99,31 +95,29 @@ const CoverLetter = () => {
             )}
           </div>
 
-          {/* JD Upload Box (Same as Resume Box) */}
-          <div className="mt-6 w-full max-w-2xl border-2 border-dashed border-gray-500 bg-gray-800/80 p-10 rounded-2xl text-center hover:bg-gray-700 transition-all">
-            <p className="text-gray-300 text-2xl font-medium">Drop your job description or paste text</p>
-            <p className="text-lg text-gray-500 mt-2">📋 Paste or Upload JD File (TXT/DOC)</p>
+          {/* Job Details Section */}
+          <div className="mt-6 w-full max-w-2xl bg-gray-800/80 p-10 rounded-2xl text-center">
+            <p className="text-gray-300 text-2xl font-medium">Enter Job Details</p>
 
-            {/* JD Upload Area */}
-            <div className="mt-4 flex justify-center">
-              <input type="file" accept=".txt,.doc,.docx" className="hidden" id="jd-upload" onChange={(e) => setJdFile(e.target.files[0])} />
-              <label htmlFor="jd-upload" className="px-6 py-2 bg-purple-600 text-white font-bold text-xl rounded-lg hover:bg-purple-700 cursor-pointer">
-                Upload JD File
-              </label>
-            </div>
+            {/* Company Name */}
+            <input
+              type="text"
+              className="mt-4 w-full p-4 text-gray-900 rounded-md border border-gray-600 focus:ring-2 focus:ring-purple-500 bg-white"
+              placeholder="Company Name"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+            />
 
-            {/* Show Uploaded JD File */}
-            {jdFile && (
-              <div className="mt-4 flex items-center justify-center gap-4">
-                <FaFileWord className="text-blue-500 text-5xl" />
-                <p className="text-gray-300 text-xl">{jdFile.name}</p>
-                <button onClick={removeJdFile} className="text-red-400 hover:text-red-600">
-                  <FaTrash className="text-3xl" />
-                </button>
-              </div>
-            )}
+            {/* Job Title */}
+            <input
+              type="text"
+              className="mt-4 w-full p-4 text-gray-900 rounded-md border border-gray-600 focus:ring-2 focus:ring-purple-500 bg-white"
+              placeholder="Job Title"
+              value={jobTitle}
+              onChange={(e) => setJobTitle(e.target.value)}
+            />
 
-            {/* JD Text Area (Inside Box) */}
+            {/* Job Description */}
             <textarea
               className="mt-4 w-full p-4 text-gray-900 rounded-md border border-gray-600 focus:ring-2 focus:ring-purple-500 bg-white h-40"
               placeholder="Paste the job description here..."
@@ -141,8 +135,19 @@ const CoverLetter = () => {
             onClick={handleUpload}
             disabled={isUploading}
           >
-            {isUploading ? "Uploading..." : "Upload"}
+            {isUploading ? "Uploading..." : "Generate Cover Letter"}
           </button>
+
+          {/* Download PDF Button (After Generation) */}
+          {generatedPdf && (
+            <a
+              href={generatedPdf}
+              download="CoverLetter.pdf"
+              className="mt-6 px-6 py-3 bg-green-600 text-white font-bold text-xl rounded-lg hover:bg-green-700 transition"
+            >
+              Download Cover Letter
+            </a>
+          )}
         </div>
       </div>
 
