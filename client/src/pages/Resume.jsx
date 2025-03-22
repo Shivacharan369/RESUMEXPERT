@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
-import { FaFilePdf, FaFileWord, FaTrash, FaBriefcase, FaFileAlt, FaAlignLeft, FaFolderOpen, FaLightbulb, FaPalette, FaPlus, FaMinus } from "react-icons/fa";
+import {
+  FaFilePdf,
+  FaFileWord,
+  FaTrash,
+  FaPlus,
+  FaMinus,
+} from "react-icons/fa";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import videoRes from "../assets/videores.mp4";
@@ -10,6 +16,7 @@ import bgImage from "../assets/bg.jpg";
 const Resume = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
+  const [jobDescription, setJobDescription] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
@@ -25,6 +32,7 @@ const Resume = () => {
     setIsUploading(true);
     const formData = new FormData();
     formData.append("resume", file);
+    formData.append("jobDescription", jobDescription);
 
     try {
       const response = await fetch("http://localhost:5000/upload", {
@@ -49,18 +57,19 @@ const Resume = () => {
     <>
       <Header />
       <div
-        className="min-h-screen flex flex-col items-center justify-center text-white pt-20 font-caramond relative"
+        className="min-h-screen flex flex-col items-center justify-center text-white pt-20 font-caramond relative px-10"
         style={{ backgroundImage: `url(${bgImage})`, backgroundSize: "cover", backgroundPosition: "center" }}
       >
         <div className="absolute inset-0 bg-black/50"></div>
 
-        <div className="relative z-10 flex flex-col items-center">
-          <h1 className="text-5xl font-bold text-center pt-10 pb-2 text-white-400">Get Your Resume Score Now..!</h1>
-          <p className="mt-4 text-2xl text-gray-300">Upload your resume and check your resume score.</p>
+        <div className="relative z-10 flex flex-col items-center w-full">
+          <h1 className="text-6xl font-bold text-center pt-10 pb-6">Get Your Resume Score Now..!</h1>
+          <p className="mt-4 text-2xl text-gray-300 text-center">Upload your resume and check your resume score.</p>
 
+          {/* Resume Upload Section */}
           <div
             {...getRootProps()}
-            className="mt-6 w-full max-w-2xl border-2 border-dashed border-gray-500 bg-gray-800/80 p-10 rounded-2xl text-center cursor-pointer hover:bg-gray-700 transition-all"
+            className="mt-6 w-full max-w-3xl border-2 border-dashed border-gray-500 bg-gray-800/80 p-12 rounded-2xl text-center cursor-pointer hover:bg-gray-700 transition-all"
           >
             <input {...getInputProps()} />
             {!file ? (
@@ -83,8 +92,19 @@ const Resume = () => {
             )}
           </div>
 
+          {/* Job Description Section */}
+          <div className="mt-12 w-full max-w-3xl">
+            <h2 className="text-5xl font-bold text-center pb-4">Job Description</h2>
+            <textarea
+              className="w-full h-40 bg-gray-800/90 text-gray-300 p-4 rounded-lg border-2 border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              placeholder="Paste the job description here..."
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+            ></textarea>
+          </div>
+
           <button
-            className="mt-6 px-6 py-3 bg-purple-600 text-white font-bold text-xl rounded-lg hover:bg-purple-700 transition"
+            className="mt-6 px-8 py-4 bg-purple-600 text-white font-bold text-xl rounded-lg hover:bg-purple-700 transition"
             onClick={handleUpload}
             disabled={isUploading}
           >
@@ -98,10 +118,11 @@ const Resume = () => {
           )}
           {uploadSuccess && <p className="mt-2 text-green-400 text-xl">✅ Upload successful!</p>}
 
-          <div className="mt-16 text-center w-full">
-            <h2 className="text-6xl font-bold text-white-400">OUR AI POWERED RESUME CHECKER GIVES US</h2>
+          {/* AI Resume Checker Video Section */}
+          <div className="mt-20 text-center w-full">
+            <h2 className="text-6xl font-bold text-white">OUR AI POWERED RESUME CHECKER GIVES US</h2>
             <div className="relative mt-8 w-full flex justify-center">
-              <video src={videoRes} autoPlay loop muted className="w-3/4 rounded-lg shadow-lg" />
+              <video src={videoRes} autoPlay loop muted className="w-[80%] rounded-lg shadow-lg" />
             </div>
           </div>
 
@@ -119,44 +140,40 @@ const FAQSection = () => {
   const questions = [
     {
       q: "What is ResumeXpert?",
-      a: "ResumeXpert is an AI-driven resume checker that evaluates resumes based on structure, content, and ATS compatibility. It analyzes formatting, keyword optimization, spelling and grammar, and provides actionable insights to make your resume more impactful. With ResumeXpert, you can ensure your resume aligns with modern hiring trends, maximizing your chances of getting noticed by recruiters.",
+      a: "ResumeXpert is an AI-driven resume checker that evaluates resumes based on job descriptions, ATS compatibility, grammar, and formatting to increase hiring chances. It ensures your resume aligns with modern hiring trends and improves its overall impact."
     },
     {
       q: "How does AI improve my resume?",
-      a: "AI enhances your resume by analyzing job descriptions and identifying missing skills or keywords. It checks grammar, readability, and overall structure, ensuring it’s clear, concise, and tailored for the job. AI also helps refine bullet points, quantifying achievements to create a strong impression on employers.",
+      a: "AI enhances your resume by analyzing job descriptions, checking for relevant keywords, detecting formatting issues, and ensuring proper grammar. This helps improve your resume’s visibility and chances of passing applicant tracking systems (ATS)."
     },
     {
       q: "What makes a resume ATS-friendly?",
-      a: "An ATS-friendly resume uses a clean format, incorporates industry-relevant keywords, and avoids excessive graphics or tables. Using proper headings, standard fonts, and bullet points helps ensure that an ATS can parse and rank your resume correctly. Our resume checker provides a detailed ATS compatibility report to help you optimize your document.",
+      a: "An ATS-friendly resume uses a clean, simple format with properly structured sections. It avoids excessive graphics, fancy fonts, and tables that might interfere with parsing. Proper use of industry-specific keywords is also crucial."
     },
     {
       q: "What is a good ATS score?",
-      a: "A good ATS score is generally 80% or above. This indicates that your resume contains the right keywords, structure, and formatting to pass through Applicant Tracking Systems successfully. If your score is lower, consider adjusting your resume by adding relevant keywords and improving readability.",
+      a: "A good ATS score is typically 80% or higher. This indicates that your resume is well-optimized for the job you’re applying for, increasing your chances of being shortlisted."
     },
     {
       q: "Can an ATS read PDFs?",
-      a: "Yes, most modern ATS systems can read text-based PDFs. However, image-based PDFs or heavily formatted designs may cause parsing issues. To ensure compatibility, save your resume as a properly structured PDF or DOCX file with readable text.",
+      a: "Yes, modern ATS systems can read text-based PDFs. However, image-based PDFs or resumes with complex formatting may not be parsed correctly, reducing their effectiveness."
     },
     {
       q: "How do I review my resume for errors?",
-      a: "To check for errors, read your resume aloud, use grammar-checking tools, and get feedback from peers or career advisors. Pay attention to formatting consistency, spelling, and redundant phrases. Our AI resume checker scans for these issues and suggests improvements.",
-    },
-    {
-      q: "What should I focus on when checking my resume?",
-      a: "Key areas to focus on include: formatting, keyword relevance, quantifiable achievements, ATS optimization, spelling/grammar, and consistency in dates and job descriptions. Ensure each section is clear and easy to read.",
+      a: "To ensure your resume is error-free, proofread it carefully, use grammar-checking tools, and get feedback from career professionals. Pay attention to formatting, spelling, and clarity of information."
     },
   ];
 
   return (
-    <div className="mt-16 w-full max-w-4xl text-white">
-      <h2 className="text-7xl font-bold text-center text-white-400">Frequently Asked Questions</h2>
+    <div className="mt-20 w-full max-w-4xl text-white">
+      <h2 className="text-7xl font-bold text-center">Frequently Asked Questions</h2>
       {questions.map((item, index) => (
-        <div key={index} className="mt-6 bg-gray-800 p-4 rounded-lg">
+        <div key={index} className="mt-8 bg-gray-800 p-6 rounded-lg">
           <div className="flex justify-between items-center cursor-pointer" onClick={() => setOpenIndex(openIndex === index ? null : index)}>
             <h3 className="text-3xl text-purple-400 font-semibold">{item.q}</h3>
             {openIndex === index ? <FaMinus className="text-purple-400" /> : <FaPlus className="text-purple-400" />}
           </div>
-          {openIndex === index && <p className="mt-3 text-xl text-gray-300 font-semibold">{item.a}</p>}
+          {openIndex === index && <p className="mt-5 text-2xl text-gray-300 font-semibold">{item.a}</p>}
         </div>
       ))}
     </div>
