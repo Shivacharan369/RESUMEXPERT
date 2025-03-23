@@ -37,7 +37,7 @@ const Header = () => {
         <Link to="/coverletter" onClick={(e) => handleNavigation(e, "/coverletter")}>
           CoverLetter
         </Link>
-        <Link to="/mock" onClick={(e) => handleNavigation(e, "/mock")}>
+        <Link to="/mock-interview" onClick={(e) => handleNavigation(e, "/mock")}>
           MockInterview
         </Link>
         <Link to="/profile" onClick={(e) => handleNavigation(e, "/profile")}>

@@ -1,0 +1,7 @@
+flask
+flask-cors
+requests
+transformers
+nltk
+sentence-transformers
+pyresparser
