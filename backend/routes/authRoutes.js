@@ -8,5 +8,5 @@ router.post("/register", authController.register);
 
 // Login route
 router.post("/login", authController.login);
-
+router.get("/profile", authController.getProfile);
 module.exports = router;

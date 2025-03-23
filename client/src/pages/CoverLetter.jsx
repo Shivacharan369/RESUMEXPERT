@@ -23,22 +23,22 @@ const CoverLetter = () => {
 
   const removeResumeFile = () => setResumeFile(null);
 
-  const handleUpload = async () => {
+  const handleCoverLetterUpload = async () => {
     if (!resumeFile || !companyName || !jobTitle || !jdText) {
       setErrorMessage("⚠️ Please upload your resume and fill all job details.");
       return;
     }
 
-    setErrorMessage(""); // Clear error
+    setErrorMessage(""); 
     setIsUploading(true);
     const formData = new FormData();
-    formData.append("coverLetter", resumeFile);
-    formData.append("companyName", companyName);
-    formData.append("jobTitle", jobTitle);
-    formData.append("jobDescriptionText", jdText);
+    formData.append("resume", resumeFile);
+    formData.append("company", companyName);
+    formData.append("job_title", jobTitle);
+    formData.append("hiring_manager", "Hiring Manager");
 
     try {
-      const response = await fetch("http://localhost:5000/generate-cover-letter", {
+      const response = await fetch("http://localhost:5002/generate-cover-letter", {
         method: "POST",
         body: formData,
       });
@@ -59,8 +59,6 @@ const CoverLetter = () => {
   return (
     <>
       <Header />
-
-      {/* Cover Letter Upload Section */}
       <div
         className="min-h-screen flex flex-col items-center justify-center text-white pt-20 font-caramond relative"
         style={{ backgroundImage: `url(${bgImage})`, backgroundSize: "cover", backgroundPosition: "center" }}
@@ -69,11 +67,10 @@ const CoverLetter = () => {
 
         <div className="relative z-10 flex flex-col items-center">
           <h1 className="text-5xl font-bold text-center pt-10 pb-2 text-purple-400">
-            Get Your Cover Letter Score Now..!
+            Generate Your Cover Letter!
           </h1>
           <p className="mt-4 text-2xl text-gray-300">Upload your resume and enter job details.</p>
 
-          {/* Resume Upload Box */}
           <div
             {...getRootProps()}
             className="mt-6 w-full max-w-2xl border-2 border-dashed border-gray-500 bg-gray-800/80 p-10 rounded-2xl text-center cursor-pointer hover:bg-gray-700 transition-all"
@@ -95,11 +92,9 @@ const CoverLetter = () => {
             )}
           </div>
 
-          {/* Job Details Section */}
           <div className="mt-6 w-full max-w-2xl bg-gray-800/80 p-10 rounded-2xl text-center">
             <p className="text-gray-300 text-2xl font-medium">Enter Job Details</p>
 
-            {/* Company Name */}
             <input
               type="text"
               className="mt-4 w-full p-4 text-gray-900 rounded-md border border-gray-600 focus:ring-2 focus:ring-purple-500 bg-white"
@@ -108,7 +103,6 @@ const CoverLetter = () => {
               onChange={(e) => setCompanyName(e.target.value)}
             />
 
-            {/* Job Title */}
             <input
               type="text"
               className="mt-4 w-full p-4 text-gray-900 rounded-md border border-gray-600 focus:ring-2 focus:ring-purple-500 bg-white"
@@ -117,40 +111,35 @@ const CoverLetter = () => {
               onChange={(e) => setJobTitle(e.target.value)}
             />
 
-            {/* Job Description */}
             <textarea
               className="mt-4 w-full p-4 text-gray-900 rounded-md border border-gray-600 focus:ring-2 focus:ring-purple-500 bg-white h-40"
               placeholder="Paste the job description here..."
               value={jdText}
               onChange={(e) => setJdText(e.target.value)}
             />
-          </div>
 
-          {/* Error Message */}
-          {errorMessage && <p className="mt-4 text-red-400 text-lg">{errorMessage}</p>}
+            {errorMessage && <p className="mt-4 text-red-400 text-lg">{errorMessage}</p>}
 
-          {/* Upload Button */}
-          <button
-            className="mt-6 px-6 py-3 bg-purple-600 text-white font-bold text-xl rounded-lg hover:bg-purple-700 transition"
-            onClick={handleUpload}
-            disabled={isUploading}
-          >
-            {isUploading ? "Uploading..." : "Generate Cover Letter"}
-          </button>
-
-          {/* Download PDF Button (After Generation) */}
-          {generatedPdf && (
-            <a
-              href={generatedPdf}
-              download="CoverLetter.pdf"
-              className="mt-6 px-6 py-3 bg-green-600 text-white font-bold text-xl rounded-lg hover:bg-green-700 transition"
+            <button
+              className="mt-6 px-6 py-3 bg-purple-600 text-white font-bold text-xl rounded-lg hover:bg-purple-700 transition"
+              onClick={handleCoverLetterUpload}
+              disabled={isUploading}
             >
-              Download Cover Letter
-            </a>
-          )}
+              {isUploading ? "Generating..." : "Generate Cover Letter"}
+            </button>
+
+            {generatedPdf && (
+              <a
+                href={generatedPdf}
+                download="CoverLetter.pdf"
+                className="mt-6 px-6 py-3 bg-green-600 text-white font-bold text-xl rounded-lg hover:bg-green-700 transition inline-block"
+              >
+                📥 Download Cover Letter
+              </a>
+            )}
+          </div>
         </div>
       </div>
-
       <Footer />
     </>
   );

@@ -54,3 +54,31 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 };
+exports.getProfile = async (req, res) => {
+  try {
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+
+    if (!token) {
+      return res.status(401).json({ error: "Access denied. No token provided." });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Fix typo: JWT_SECRET
+    const userId = decoded.userId;
+
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Return the user's profile data, including resumeUrl and coverLetterUrl
+    res.status(200).json({
+      username: user.username,
+      email: user.email,
+      resumeUrl: user.resumeUrl, // Add resumeUrl
+      coverLetterUrl: user.coverLetterUrl, // Add coverLetterUrl
+    });
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
