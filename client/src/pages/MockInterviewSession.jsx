@@ -13,7 +13,7 @@ const MockInterviewSession = () => {
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const recordedChunks = useRef([]);
-  const streamRef = useRef(null); // Store the media stream
+  const streamRef = useRef(null);
 
   // 🟢 Start Webcam
   useEffect(() => {
@@ -21,9 +21,8 @@ const MockInterviewSession = () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         videoRef.current.srcObject = stream;
-        streamRef.current = stream; // Store the stream
+        streamRef.current = stream;
 
-        // 🎥 Setup Video Recording
         mediaRecorderRef.current = new MediaRecorder(stream);
         mediaRecorderRef.current.ondataavailable = (event) => {
           if (event.data.size > 0) recordedChunks.current.push(event.data);
@@ -34,7 +33,7 @@ const MockInterviewSession = () => {
     }
     startWebcam();
 
-    return () => stopMedia(); // Cleanup when component unmounts
+    return () => stopMedia(); // Cleanup
   }, []);
 
   // ⏳ Handle Timer & Question Progression
@@ -42,23 +41,23 @@ const MockInterviewSession = () => {
     if (currentQuestion < questions.length) {
       const timer = setTimeout(() => {
         if (timeLeft > 0) {
-          setTimeLeft(timeLeft - 1);
+          setTimeLeft((prev) => prev - 1);
         } else {
           stopRecording();
-          setIsPaused(true);
 
+          setIsPaused(true);
           setTimeout(() => {
             uploadVideoResponse();
             if (currentQuestion + 1 < questions.length) {
               setCurrentQuestion((prev) => prev + 1);
-              setTimeLeft(60);
+              setTimeLeft(() => 60);
               setIsPaused(false);
               startRecording();
             } else {
               setInterviewCompleted(true);
-              stopMedia(); // 🛑 Turn off Camera & Mic
+              stopMedia();
             }
-          }, 20000); // Pause for 20 seconds
+          }, 20000);
         }
       }, 1000);
 
@@ -66,20 +65,21 @@ const MockInterviewSession = () => {
     }
   }, [timeLeft, currentQuestion]);
 
-  // 🎥 Start Recording Response
+  // 🎥 Start Recording
   const startRecording = () => {
-    recordedChunks.current = [];
+    recordedChunks.current = []; // Reset before starting
     mediaRecorderRef.current?.start();
   };
 
-  // 🎥 Stop Recording and Save Response
+  // 🎥 Stop Recording
   const stopRecording = () => {
     if (mediaRecorderRef.current?.state === "recording") {
+      mediaRecorderRef.current.onstop = uploadVideoResponse; // Upload after stop
       mediaRecorderRef.current.stop();
     }
   };
 
-  // 📤 Upload Video Response to Backend
+  // 📤 Upload Video Response
   const uploadVideoResponse = async () => {
     if (recordedChunks.current.length === 0) return;
 
@@ -100,7 +100,7 @@ const MockInterviewSession = () => {
     }
   };
 
-  // 🛑 Stop Camera & Microphone
+  // 🛑 Stop Media
   const stopMedia = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
